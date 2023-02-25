@@ -16,11 +16,12 @@ require_once '../settings/config.php';
   </title>
 
   <!-- STYLES -->
-  <link rel="stylesheet" href="/css/normalize.css">
+  <!-- <link rel="stylesheet" href="/css/normalize.css"> -->
   <link rel="stylesheet" href="/css/styles.css">
   <?=!isset($styles) ? '' : $styles ?>
 
   <!-- SCRIPTS -->
   <script src="/js/libs/tailwindcss.min.js"></script>
+  <script src="/js/libs/alpine-ie11.min.js"></script>
   <?=!isset($scripts) ? '' : $scripts ?>
 </head>
