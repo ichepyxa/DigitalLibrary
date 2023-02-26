@@ -1,14 +1,21 @@
 <?php
 
 require_once '../utils/renderTemplate.php';
-// require_once '../services/authService.php';
+require_once '../services/authService.php';
+require_once '../services/librarianService.php';
 
-// $isUserAuth = $authService->checkIsAuth();
+$isAuth = $authService->checkIsAuth();
+$isAdmin = $authService->checkIsAdmin();
+$login = $librarianService->getLogin();
 
-// if ($isUserAuth) {
-//   header('Location: /panel.php');
-//   exit();
-// }
+if ($isAuth) {
+  header('Location: library.php');
+  exit();
+}
+
+if (isset($_POST['login']) && isset($_POST['password'])) {
+  $error = $authService->login($_POST['login'], $_POST['password']);
+}
 
 ?>
 
@@ -19,9 +26,12 @@ require_once '../utils/renderTemplate.php';
 ]) ?>
 
 <body>
-  <!-- ['isUserAuth' => $isUserAuth] -->
   <main class='main flex justify-self-stretch ml-60 '>
-    <?= renderTemplate('../components/sidebar.php') ?>
+    <?= renderTemplate('../components/sidebar.php', [
+      'isAuth' => $isAuth,
+      'isAdmin' => $isAdmin,
+      'login' => $login
+    ]) ?>
     <section class="w-full min-h-screen flex justify-center items-center">
       <div
         class="flex w-full mx-auto max-w-sm overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 lg:max-w-4xl">
@@ -43,7 +53,7 @@ require_once '../utils/renderTemplate.php';
             <label class="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200" for="login">Логин</label>
             <input id="login"
               class="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-              type="text" name="login" />
+              type="text" name="login" required />
           </div>
 
           <div class="mt-4">
@@ -54,7 +64,7 @@ require_once '../utils/renderTemplate.php';
 
             <input id="password"
               class="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-              type="password" name="password" />
+              type="password" name="password" required />
           </div>
 
           <div class="mt-6">
@@ -63,6 +73,12 @@ require_once '../utils/renderTemplate.php';
               Войти
             </button>
           </div>
+
+          <?php
+          if (isset($error) && strlen($error)) {
+            echo "<p class='text-red-500 mt-2'>$error</p>";
+          }
+          ?>
         </form>
       </div>
     </section>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Method for render template
+ * Метод для рендера файла
  * @param string $file
  * @param array $args
  * @return void
@@ -17,7 +17,7 @@ function renderTemplate(string $file, array $args = []): void
   }
 
   ob_start();
-  require_once $file;
+  require $file;
   $template = ob_get_clean();
   echo !$template ? '' : $template;
 }

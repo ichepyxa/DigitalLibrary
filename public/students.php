@@ -4,6 +4,7 @@ require_once '../utils/renderTemplate.php';
 require_once '../services/authService.php';
 require_once '../services/librarianService.php';
 require_once '../services/libraryService.php';
+require_once '../services/studentService.php';
 
 $isAuth = $authService->checkIsAuth();
 $isAdmin = $authService->checkIsAdmin();
@@ -19,7 +20,7 @@ if (!$isAuth) {
 <!DOCTYPE html>
 <html>
 <?= renderTemplate('../components/head.php', [
-  'title' => 'GGMKBook - библиотека'
+  'title' => 'GGMKBook - карточки студентов'
 ]) ?>
 
 <body>
@@ -33,58 +34,39 @@ if (!$isAuth) {
       <section class="bg-white w-full py-16">
         <?php
 
-        $book = $libraryService->getBook((int) $_GET['id']);
+        $student = $studentService->getStudent((int) $_GET['id']);
 
         ?>
 
         <div class="flex justify-center mx-auto mb-10 gap-10">
-          <div class="w-5/6 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 flex justify-between">
-            <div class="w-1/2 h-full relative block">
-              <img class="object-cover w-full h-full block" src="/images/card-img.jpeg" alt="Article">
-              <div class="absolute top-2 right-2 w-fit bg-slate-900/70 rounded-lg p-3">
-                <h4 class="mx-3 text-sm text-white">
-                  <?php
-
-                  if ((int) $book['count'] > 0) {
-                    echo "В наличии: {$book['count']} шт.";
-                  } else {
-                    echo "Нет в наличии";
-                  }
-
-                  ?>
-                </h4>
-              </div>
-            </div>
-
-            <div class="w-1/2 p-7 py-10">
+          <div class="w-5/6 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <div class="p-7 py-10">
               <p class="block text-4xl font-semibold text-gray-800 dark:text-white" tabindex="0" role="link">
-                <?=
-                  $book['name'] ?>
-              </p>
-              <p class="mt-6 text-lg text-gray-600 dark:text-gray-200">
-                <?= $book['description'] ?>
+                <?="{$student['name']} {$student['surname']} {$student['patronymic']}" ?>
               </p>
 
               <div class="mt-6">
-                <p class="text-sm text-gray-700 dark:text-gray-200" tabindex="0" role="link">Создатель:
-                  <?="{$book['author']['surname']} {$book['author']['name']} {$book['author']['patronymic']}" ?>
+                <p class="mt-2 text-lg text-gray-600 dark:text-gray-200">
+                  <?="Группа: {$student['group']['group_name']}" ?>
                 </p>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Дата публикации:
-                  <?= $book['publish_year'] ?> год
+                <p class="mt-2 text-lg text-gray-600 dark:text-gray-200">
+                  <?="Адрес проживания: {$student['address']}" ?>
+                </p>
+                <p class="mt-2 text-lg text-gray-600 dark:text-gray-200">Дата рождения:
+                  <?=(new DateTime($student['date_birth']))->format('d m Y') ?>
                 </p>
               </div>
 
-              <?php if ((int) $book['count'] > 0): ?>
-                <a href="give-book.php?book_id=<?= $book['book_id'] ?>"
-                  class='px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 block w-fit ml-auto mt-6'>Выдать</a>
-              <?php endif; ?>
+              <a href="give-book.php?student_id=<?= $book['book_id'] ?>"
+                class='px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 block w-fit ml-auto mt-6'>Выдать
+                книгу</a>
             </div>
           </div>
         </div>
 
         <?php
 
-        $issuedBooks = $libraryService->getIssuedBookById((int) $_GET['id'], null);
+        $issuedBooks = $libraryService->getIssuedBookById(null, (int) $_GET['id']);
 
         ?>
 
@@ -104,7 +86,7 @@ if (!$isAuth) {
 
                         <th scope="col"
                           class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                          ФИО учащегося
+                          Книга
                         </th>
 
                         <th scope="col"
@@ -132,9 +114,9 @@ if (!$isAuth) {
                             </span>
                           </td>
                           <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                            <a href="students.php?id=<?= $issuedBook['student']['student_id'] ?>"
+                            <a href="library.php?id=<?= $issuedBook['book']['book_id'] ?>"
                               class="text-sm font-medium text-gray-800 dark:text-white border-b border-dashed hover:border-blue-400 hover:text-blue-400 hover:border-solid transition border-gray-800 dark:border-white py-1">
-                              <?= $issuedBook['student']['surname'] . " " . mb_substr($issuedBook['student']['name'], 0, 1, 'UTF-8') . ". " . mb_substr($issuedBook['student']['patronymic'], 0, 1, 'UTF-8') . "." ?>
+                              <?= $issuedBook['book']['name'] ?>
                             </a>
                           </td>
                           <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -160,19 +142,18 @@ if (!$isAuth) {
                   </table>
                 </div>
               <?php else: ?>
-                <h4 class="text-lg text-center">Нету истории выдачи, возврата книг</h4>
+                <h4 class="text-lg text-center">Нету истории учащегося</h4>
               <?php endif; ?>
             </div>
           </div>
         </div>
-
       </section>
     <?php else: ?>
       <section class="bg-white w-6/7 flex justify-center flex-wrap mx-auto py-16 gap-10">
         <?php
 
-        $books = $libraryService->getBooks(); foreach ($books as $key => $book) {
-          renderTemplate('../components/bookCard.php', ['book' => $book]);
+        $students = $studentService->getStudents(); foreach ($students as $key => $student) {
+          renderTemplate('../components/studentCard.php', ['student' => $student]);
         }
 
         ?>

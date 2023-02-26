@@ -1,14 +1,20 @@
 <?php
 
 require_once '../utils/renderTemplate.php';
-// require_once '../services/authService.php';
+require_once '../services/authService.php';
+require_once '../services/librarianService.php';
 
-// $isUserAuth = $authService->checkIsAuth();
+$isAuth = $authService->checkIsAuth();
+$isAdmin = $authService->checkIsAdmin();
+$login = $librarianService->getLogin();
 
-// if ($isUserAuth) {
-//   header('Location: /panel.php');
-//   exit();
-// }
+if ($isAuth && $isAdmin) {
+  header('Location: librarians.php');
+  exit();
+} else if ($isAuth) {
+  header('Location: library.php');
+  exit();
+}
 
 ?>
 
@@ -19,9 +25,12 @@ require_once '../utils/renderTemplate.php';
 ]) ?>
 
 <body>
-  <!-- ['isUserAuth' => $isUserAuth] -->
   <main class='main flex justify-self-stretch ml-60'>
-    <?= renderTemplate('../components/sidebar.php') ?>
+    <?= renderTemplate('../components/sidebar.php', [
+      'isAuth' => $isAuth,
+      'isAdmin' => $isAdmin,
+      'login' => $login
+    ]) ?>
     <section class="bg-white w-full">
       <div class="container px-6 py-20 mx-auto text-center">
         <div class="max-w-lg mx-auto">
@@ -37,7 +46,7 @@ require_once '../utils/renderTemplate.php';
         </div>
 
         <div class="flex max-w-4xl mx-auto justify-center mt-5 relative rounded-xl overflow-hidden">
-          <img class="object-cover w-full h-96" src="/images/img.jpeg" />
+          <img class="object-cover w-full h-96" src="/images/main-img.jpeg" />
           <div class='bg-slate-900/30 absolute inset-0 w-full'></div>
         </div>
       </div>
