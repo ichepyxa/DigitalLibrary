@@ -121,6 +121,11 @@ if (!$isAuth) {
                           class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                           Дата возврата
                         </th>
+
+                        <th scope="col"
+                          class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+
+                        </th>
                       </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
@@ -154,6 +159,14 @@ if (!$isAuth) {
                           <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                             <?=!isset($issuedBook['date_return']) ? 'Отсутствует' : $issuedBook['date_return'] ?>
                           </td>
+                          <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            <?php if ($issuedBook['status'] !== 'Возвращена'): ?>
+                              <a href="return-book.php?issueId=<?= $issuedBook['issue_id'] ?>&redirectPath=<?= $_SERVER['REQUEST_URI'] ?>"
+                                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-emerald-400 text-gray-800 hover:bg-emerald-300 transition">
+                                Возвратить
+                              </a>
+                            <?php endif; ?>
+                          </td>
                         </tr>
                       <?php endforeach; ?>
                     </tbody>
@@ -168,14 +181,17 @@ if (!$isAuth) {
 
       </section>
     <?php else: ?>
-      <section class="bg-white w-6/7 flex justify-center flex-wrap mx-auto py-16 gap-10">
-        <?php
+      <section class="bg-white py-10">
+        <div></div>
+        <div class="w-11/12 flex justify-center flex-wrap mx-auto gap-10">
+          <?php
 
-        $books = $libraryService->getBooks(); foreach ($books as $key => $book) {
-          renderTemplate('../components/bookCard.php', ['book' => $book]);
-        }
+          $books = $libraryService->getBooks(); foreach ($books as $key => $book) {
+            renderTemplate('../components/bookCard.php', ['book' => $book]);
+          }
 
-        ?>
+          ?>
+        </div>
       </section>
     <?php endif; ?>
   </main>

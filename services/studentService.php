@@ -86,52 +86,39 @@ class StudentService
     return $result[0];
   }
 
-  /**
-   * Метод получения списка выдачи книг 
-   * @return array
-   */
-  public function getIssuedBookById(int $bookId, string $status = ''): array
+  public function createStudent(string $name, string $surname, string $patronymic, string $address, string $group, string $date_birth, string $phone)
   {
-    if ($status) {
-      $query = $this->connect->prepare("SELECT * FROM `issued` WHERE `book_id` = :book_id AND `status` = :status");
-      $query->execute(['book_id' => $bookId, 'status' => $status]);
-    } else {
-      $query = $this->connect->prepare("SELECT * FROM `issued` WHERE `book_id` = :book_id");
-      $query->execute(['book_id' => $bookId]);
+    $groupUpperCase = mb_strtoupper($group, 'UTF-8');
+    $query = $this->connect->prepare("SELECT * FROM `groups` WHERE `group_name` = :group_name");
+    $query->execute(['group_name' => $groupUpperCase]);
+    $group = $query->fetch();
+
+    if (!$group) {
+      $query = $this->connect->prepare("INSERT INTO `groups` (`group_name`) VALUES (:group_name)");
+      $query->execute(['group_name' => $groupUpperCase]);
     }
 
-    $issuedBooks = $query->fetchAll();
-    if (!$issuedBooks) {
-      return [];
-    }
+    $query = $this->connect->prepare("SELECT * FROM `groups` WHERE `group_name` = :group_name");
+    $query->execute(['group_name' => $groupUpperCase]);
+    $group = $query->fetch();
 
-    $result = [];
-    foreach ($issuedBooks as $key => $issuedBook) {
-      $result[$key] = [
-        'issue_id' => $issuedBook['issue_id'],
-        'date_give' => $issuedBook['date_give'],
-        'date_return' => $issuedBook['date_return'],
-        'status' => $issuedBook['status']
-      ];
+    $groupId = $group['group_id'];
 
-      $query = $this->connect->prepare("SELECT * FROM `books` WHERE `book_id` = :book_id");
-      $query->execute(['book_id' => $bookId]);
+    $query = $this->connect->prepare("INSERT INTO `student_cards` (`surname`, `name`, `patronymic`, `address`, `phone`, `date_birth`, `group_id`) VALUES (:surname, :name, :patronymic, :address, :phone, :date_birth, :group_id)");
+    $query->execute([
+      'surname' => $surname,
+      'name' => $name,
+      'patronymic' => $patronymic,
+      'address' => $address,
+      'phone' => $phone,
+      'date_birth' => $date_birth,
+      'group_id' => $groupId
+    ]);
 
-      $book = $query->fetch();
-      if ($book) {
-        $result[$key]['book'] = $book;
-      }
-
-      $query = $this->connect->prepare("SELECT * FROM `student_cards` WHERE `student_id` = :student_id");
-      $query->execute(['student_id' => $issuedBook['student_id']]);
-
-      $student = $query->fetch();
-      if ($student) {
-        $result[$key]['student'] = $student;
-      }
-    }
-
-    return $result;
+    return [
+      'isError' => false,
+      'message' => 'Пользователь успешно создан'
+    ];
   }
 }
 

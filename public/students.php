@@ -57,7 +57,7 @@ if (!$isAuth) {
                 </p>
               </div>
 
-              <a href="give-book.php?student_id=<?= $book['book_id'] ?>"
+              <a href="give-book.php?student_id=<?= $student['student_id'] ?>"
                 class='px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 block w-fit ml-auto mt-6'>Выдать
                 книгу</a>
             </div>
@@ -103,6 +103,10 @@ if (!$isAuth) {
                           class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                           Дата возврата
                         </th>
+                        <th scope="col"
+                          class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+
+                        </th>
                       </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
@@ -136,6 +140,14 @@ if (!$isAuth) {
                           <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                             <?=!isset($issuedBook['date_return']) ? 'Отсутствует' : $issuedBook['date_return'] ?>
                           </td>
+                          <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                            <?php if ($issuedBook['status'] !== 'Возвращена'): ?>
+                              <a href="return-book.php?issueId=<?= $issuedBook['issue_id'] ?>&redirectPath=<?= $_SERVER['REQUEST_URI'] ?>"
+                                class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-emerald-400 text-gray-800 hover:bg-emerald-300 transition">
+                                Возвратить
+                              </a>
+                            <?php endif; ?>
+                          </td>
                         </tr>
                       <?php endforeach; ?>
                     </tbody>
@@ -149,14 +161,31 @@ if (!$isAuth) {
         </div>
       </section>
     <?php else: ?>
-      <section class="bg-white w-6/7 flex justify-center flex-wrap mx-auto py-16 gap-10">
-        <?php
+      <section class="bg-white py-10">
+        <div class="mb-5 w-11/12 mx-auto">
+          <h2 class="text-3xl font-bold text-center mb-3">Учащиеся</h2>
+          <a href="create-student.php"
+            class="w-fit flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 ml-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1" viewBox="0 0 24 24" stroke-width="2"
+              stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+              <path d="M9 12l6 0"></path>
+              <path d="M12 9l0 6"></path>
+            </svg>
 
-        $students = $studentService->getStudents(); foreach ($students as $key => $student) {
-          renderTemplate('../components/studentCard.php', ['student' => $student]);
-        }
+            <span class="mx-1 text-lg">Создать</span>
+          </a>
+        </div>
+        <div class="w-11/12 flex justify-center flex-wrap mx-auto gap-10">
+          <?php
 
-        ?>
+          $students = $studentService->getStudents(); foreach ($students as $key => $student) {
+            renderTemplate('../components/studentCard.php', ['student' => $student]);
+          }
+
+          ?>
+        </div>
       </section>
     <?php endif; ?>
   </main>

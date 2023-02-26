@@ -178,6 +178,100 @@ class LibraryService
 
     return $result;
   }
+
+  /**
+   * Метод выдачи книги
+   * 
+   * @param int
+   * @param int 
+   * @return array
+   */
+  public function createIssuedBook(int $bookId, int $studentId): array
+  {
+    if (!$bookId) {
+      return [
+        'isError' => true,
+        'message' => 'Выберите книгу'
+      ];
+    }
+
+    if (!$studentId) {
+      return [
+        'isError' => true,
+        'message' => 'Выберите студента'
+      ];
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `books` WHERE `book_id` = :book_id");
+    $query->execute(['book_id' => $bookId]);
+
+    $book = $query->fetch();
+    if (!$book) {
+      return [
+        'isError' => true,
+        'message' => 'Не удалось найти книгу'
+      ];
+    }
+
+    if ((int) $book['count'] == 0) {
+      return [
+        'isError' => true,
+        'message' => 'Книг нету в наличии'
+      ];
+    }
+
+    $dateGive = (string) ((new DateTime())->format('Y-m-d'));
+    $query = $this->connect->prepare("INSERT INTO `issued` (`book_id`, `student_id`, `date_give`) VALUES (:book_id, :student_id, :date_give)");
+    $query->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+    $query->bindParam(':student_id', $studentId, PDO::PARAM_INT);
+    $query->bindParam(':date_give', $dateGive);
+    $query->execute();
+
+    $count = (int) $book['count'] - 1;
+    $query = $this->connect->prepare("UPDATE `books` SET `count` = :count WHERE `book_id` = :book_id");
+    $query->bindParam(':count', $count, PDO::PARAM_INT);
+    $query->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+    $query->execute();
+
+    return [
+      'isError' => false,
+      'message' => 'Книга успешно выдана'
+    ];
+  }
+
+  public function returnIssuedBook(int $issueId): bool
+  {
+    $query = $this->connect->prepare("SELECT * FROM `issued` WHERE `issue_id` = :issue_id");
+    $query->execute(['issue_id' => $issueId]);
+
+    $issuedBook = $query->fetch();
+    if (!$issuedBook) {
+      return false;
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `books` WHERE `book_id` = :book_id");
+    $query->execute(['book_id' => $issuedBook['book_id']]);
+
+    $book = $query->fetch();
+    if (!$book) {
+      return false;
+    }
+
+    $query = $this->connect->prepare("UPDATE `issued` SET `date_return` = :date_return, `status` = :status WHERE `issue_id` = :issue_id");
+    $query->execute([
+      'date_return' => (string) ((new DateTime())->format('Y-m-d')),
+      'status' => 'Возвращена',
+      'issue_id' => $issueId
+    ]);
+
+    $count = (int) $book['count'] + 1;
+    $query = $this->connect->prepare("UPDATE `books` SET `count` = :count WHERE `book_id` = :book_id");
+    $query->bindParam(':count', $count, PDO::PARAM_INT);
+    $query->bindParam(':book_id', $issuedBook['book_id'], PDO::PARAM_INT);
+    $query->execute();
+
+    return true;
+  }
 }
 
 $libraryService = new LibraryService($connect);

@@ -18,11 +18,11 @@ INSERT INTO genres (genre) VALUES ('Детектив');
 INSERT INTO genres (genre) VALUES ('Роман');
 INSERT INTO genres (genre) VALUES ('Поэзия');
 
-INSERT INTO books (author_id, publish_id, genre_id, name, publish_year, description, count) VALUES (1, 1, 1, '1869', 'Книга №1', 'Великий роман об истинном смысле жизни', 10);
-INSERT INTO books (author_id, publish_id, genre_id, name, publish_year, description, count) VALUES (2, 2, 1, '1866', 'Книга №2', 'Величайшее произведение Ф. М. Достоевского, созданное под впечатлением жизни в каторжных лагерях', 5);
-INSERT INTO books (author_id, publish_id, genre_id, name, publish_year, description, count) VALUES (3, 3, 4, '1899', 'Книга №3', 'Знаменитая повесть, отражающая жизнь русской интеллигенции конца XIX века', 7);
-INSERT INTO books (author_id, publish_id, genre_id, name, publish_year, description, count) VALUES (4, 4, 5, '1825', 'Книга №4', 'Поэма, которая стала знаковым произведением русской литературы', 3);
-INSERT INTO books (author_id, publish_id, genre_id, name, publish_year, description, count) VALUES (5, 5, 1, '1842', 'Книга №5', 'Шедевр, созданный Н. В. Гоголем, прославивший его как одного из величайших писателей России', 6);
+INSERT INTO books (author_id, publish_id, genre_id, publish_year, name, description, count) VALUES (1, 1, 1, '1869', 'Книга №1', 'Великий роман об истинном смысле жизни', 10);
+INSERT INTO books (author_id, publish_id, genre_id, publish_year, name, description, count) VALUES (2, 2, 1, '1866', 'Книга №2', 'Величайшее произведение Ф. М. Достоевского, созданное под впечатлением жизни в каторжных лагерях', 5);
+INSERT INTO books (author_id, publish_id, genre_id, publish_year, name, description, count) VALUES (3, 3, 4, '1899', 'Книга №3', 'Знаменитая повесть, отражающая жизнь русской интеллигенции конца XIX века', 7);
+INSERT INTO books (author_id, publish_id, genre_id, publish_year, name, description, count) VALUES (4, 4, 5, '1825', 'Книга №4', 'Поэма, которая стала знаковым произведением русской литературы', 3);
+INSERT INTO books (author_id, publish_id, genre_id, publish_year, name, description, count) VALUES (5, 5, 1, '1842', 'Книга №5', 'Шедевр, созданный Н. В. Гоголем, прославивший его как одного из величайших писателей России', 6);
 
 INSERT INTO groups (group_name)
 VALUES ('ПК-41'), ('ПСК-21'), ('ТОС-21'), ('ЛЧС-22'), ('ПК-21');
