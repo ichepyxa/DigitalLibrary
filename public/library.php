@@ -58,10 +58,14 @@ if (!$isAuth) {
 
             <div class="w-1/2 p-7 py-10">
               <p class="block text-4xl font-semibold text-gray-800 dark:text-white" tabindex="0" role="link">
-                <?=
-                  $book['name'] ?>
+                <?= $book['name'] ?>
               </p>
-              <p class="mt-6 text-lg text-gray-600 dark:text-gray-200">
+              <p class="mt-6 text-lg text-gray-600 dark:text-gray-200 break-all">
+                <span class="font-bold">Жанр: </span>
+                <?= $book['genre']['genre'] ?>
+              </p>
+              <p class="mt-2 text-lg text-gray-600 dark:text-gray-200 break-all">
+                <span class="font-bold">Описание: </span>
                 <?= $book['description'] ?>
               </p>
 
@@ -182,15 +186,31 @@ if (!$isAuth) {
       </section>
     <?php else: ?>
       <section class="bg-white py-10">
-        <div></div>
-        <div class="w-11/12 flex justify-center flex-wrap mx-auto gap-10">
-          <?php
+        <div>
+          <div class="mb-5 w-11/12 mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-3">Библиотека</h2>
+            <a href="create-book.php"
+              class="w-fit flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 ml-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                <path d="M9 12l6 0"></path>
+                <path d="M12 9l0 6"></path>
+              </svg>
 
-          $books = $libraryService->getBooks(); foreach ($books as $key => $book) {
-            renderTemplate('../components/bookCard.php', ['book' => $book]);
-          }
+              <span class="mx-1 text-lg">Создать</span>
+            </a>
+          </div>
+          <div class="w-11/12 flex justify-center flex-wrap mx-auto gap-10">
+            <?php
 
-          ?>
+            $books = $libraryService->getBooks(); foreach ($books as $key => $book) {
+              renderTemplate('../components/bookCard.php', ['book' => $book]);
+            }
+
+            ?>
+          </div>
         </div>
       </section>
     <?php endif; ?>

@@ -1,4 +1,4 @@
-<a href="?id=<?= $book['book_id'] ?>"
+<div
   class="w-full max-w-[20rem] overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800 hover:scale-105 transition">
   <div class="h-56 w-full relative">
     <img class="object-cover object-center w-full h-56 block" src="/images/card-img.jpeg" alt="avatar">
@@ -69,5 +69,44 @@
         <?="{$book['publish_year']} год" ?>
       </h1>
     </div>
+
+    <div class="flex justify-end items-stretch gap-2 mt-4 text-gray-700 dark:text-gray-200">
+      <a href="delete-book.php?book_id=<?= $book['book_id'] ?>&redirectPath=<?= $_SERVER['REQUEST_URI'] ?>"
+        class="w-fit flex justify-center items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-80">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+          stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M4 7h16"></path>
+          <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+          <path d="M10 12l4 4m0 -4l-4 4"></path>
+        </svg>
+      </a>
+
+      <a href="change-book.php?book_id=<?= $book['book_id'] ?>&redirectPath=<?= $_SERVER['REQUEST_URI'] ?>"
+        class="w-fit flex justify-center items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-yellow-600 rounded-lg hover:bg-yellow-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-opacity-80">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+          stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+          <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+          <path d="M16 5l3 3"></path>
+        </svg>
+      </a>
+
+      <a href="?id=<?= $book['book_id'] ?>"
+        class="w-fit flex justify-center items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+          stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+          <path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+          <path d="M15 8l2 0"></path>
+          <path d="M15 12l2 0"></path>
+          <path d="M7 16l10 0"></path>
+        </svg>
+      </a>
+    </div>
+
   </div>
-</a>
+</div>

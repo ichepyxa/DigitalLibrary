@@ -64,6 +64,23 @@ class LibraryService
   }
 
   /**
+   * Метод получения авторов
+   * @return array
+   */
+  public function getAuthors(): array
+  {
+    $query = $this->connect->prepare("SELECT * FROM `authors`");
+    $query->execute();
+
+    $authors = $query->fetchAll();
+    if (!$authors) {
+      return [];
+    }
+
+    return $authors;
+  }
+
+  /**
    * Метод получения книги по id
    * @param int
    * @return array
@@ -112,6 +129,287 @@ class LibraryService
     }
 
     return $result[0];
+  }
+
+  /**
+   * Метод создания книги
+   * 
+   * @param string
+   * @param string
+   * @param string
+   * @param int
+   * @param string
+   * @param string 
+   * @param array 
+   * @return array
+   */
+  public function createBook(string $name, string $publish_year, string $description, int $count, string $genre, string $authorId, array $publish): array
+  {
+    if (!$genre) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите жанр'
+      ];
+    }
+
+    if (!$authorId) {
+      return [
+        'isError' => true,
+        'message' => 'Выберите автора'
+      ];
+    }
+
+    if (!$publish) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите издательство'
+      ];
+    }
+
+    if (!$publish['name']) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите место публикации'
+      ];
+    }
+
+    if (!$publish['city']) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите город публикации'
+      ];
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `publishing` WHERE UPPER(`name`) = UPPER(:name) AND UPPER(`city`) = UPPER(:city)");
+    $query->execute([
+      'name' => $publish['name'],
+      'city' => $publish['city']
+    ]);
+
+    $publishing = $query->fetch();
+    if (!$publishing) {
+      $query = $this->connect->prepare("INSERT INTO `publishing` (`name`, `city`) VALUES (:name, :city)");
+      $query->execute([
+        'name' => $publish['name'],
+        'city' => $publish['city']
+      ]);
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `publishing` WHERE UPPER(`name`) = UPPER(:name) AND UPPER(`city`) = UPPER(:city)");
+    $query->execute([
+      'name' => $publish['name'],
+      'city' => $publish['city']
+    ]);
+
+    $publish = $query->fetch();
+
+    $query = $this->connect->prepare("SELECT * FROM `genres` WHERE UPPER(`genre`) = UPPER(:genre)");
+    $query->execute(['genre' => $genre]);
+
+    $genreFromDb = $query->fetch();
+    if (!$genreFromDb) {
+      $query = $this->connect->prepare("INSERT INTO `genres` (`genre`) VALUES (:genre)");
+      $query->execute(['genre' => $genre]);
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `genres` WHERE UPPER(`genre`) = UPPER(:genre)");
+    $query->execute(['genre' => $genre]);
+
+    $genreFromDb = $query->fetch();
+
+    $query = $this->connect->prepare("INSERT INTO `books` (`author_id`, `publish_id`, `genre_id`, `name`, `publish_year`, `description`, `count`) VALUES (:author_id, :publish_id, :genre_id, :name, :publish_year, :description, :count)");
+    $query->bindParam(':author_id', $authorId, PDO::PARAM_INT);
+    $query->bindParam(':publish_id', $publish['publish_id'], PDO::PARAM_INT);
+    $query->bindParam(':genre_id', $genreFromDb['genre_id'], PDO::PARAM_INT);
+    $query->bindParam(':name', $name);
+    $query->bindParam(':publish_year', $publish_year);
+    $query->bindParam(':description', $description);
+    $query->bindParam(':count', $count);
+    $query->execute();
+
+    return [
+      'isError' => false,
+      'message' => 'Книга успешно создана'
+    ];
+  }
+
+  /**
+   * Метод создания книги
+   * 
+   * @param string
+   * @param string
+   * @param string
+   * @return array
+   */
+  public function createAuthor(string $name, string $surname, string $patronymic): array
+  {
+    if (!$name) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите имя'
+      ];
+    }
+
+    if (!$surname) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите фамилию'
+      ];
+    }
+
+    if (!$patronymic) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите отчество'
+      ];
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `authors` WHERE UPPER(`name`) = UPPER(:name) AND UPPER(`surname`) = UPPER(:surname) and UPPER(`patronymic`) = UPPER(:patronymic)");
+    $query->execute([
+      'name' => $name,
+      'surname' => $surname,
+      'patronymic' => $patronymic
+    ]);
+
+    $author = $query->fetch();
+    if (!$author) {
+      $newName = mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
+      $newSurname = mb_strtoupper(mb_substr($surname, 0, 1)) . mb_substr($surname, 1);
+      $newPatronymic = mb_strtoupper(mb_substr($patronymic, 0, 1)) . mb_substr($patronymic, 1);
+
+      $query = $this->connect->prepare("INSERT INTO `authors` (`name`, `surname`, `patronymic`) VALUES (:name, :surname, :patronymic)");
+      $query->execute([
+        'name' => $newName,
+        'surname' => $newSurname,
+        'patronymic' => $newPatronymic
+      ]);
+
+      return [
+        'isError' => false,
+        'message' => 'Автор успешно создан'
+      ];
+    }
+
+    return [
+      'isError' => true,
+      'message' => 'Автор уже есть в базе данных'
+    ];
+  }
+
+  /**
+   * Метод обновления книги
+   * 
+   * @param string
+   * @param string
+   * @param string
+   * @param int
+   * @param string
+   * @param string 
+   * @param array 
+   * @return array
+   */
+  public function updateBook(int $bookId, string $name, string $publish_year, string $description, int $count, string $genre, string $authorId, array $publish): array
+  {
+    if (!$genre) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите жанр'
+      ];
+    }
+
+    if (!$authorId) {
+      return [
+        'isError' => true,
+        'message' => 'Выберите автора'
+      ];
+    }
+
+    if (!$publish) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите издательство'
+      ];
+    }
+
+    if (!$publish['name']) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите место публикации'
+      ];
+    }
+
+    if (!$publish['city']) {
+      return [
+        'isError' => true,
+        'message' => 'Впишите город публикации'
+      ];
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `publishing` WHERE UPPER(`name`) = UPPER(:name) AND UPPER(`city`) = UPPER(:city)");
+    $query->execute([
+      'name' => $publish['name'],
+      'city' => $publish['city']
+    ]);
+
+    $publishing = $query->fetch();
+    if (!$publishing) {
+      $query = $this->connect->prepare("INSERT INTO `publishing` (`name`, `city`) VALUES (:name, :city)");
+      $query->execute([
+        'name' => $publish['name'],
+        'city' => $publish['city']
+      ]);
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `publishing` WHERE UPPER(`name`) = UPPER(:name) AND UPPER(`city`) = UPPER(:city)");
+    $query->execute([
+      'name' => $publish['name'],
+      'city' => $publish['city']
+    ]);
+
+    $publish = $query->fetch();
+
+    $query = $this->connect->prepare("SELECT * FROM `genres` WHERE UPPER(`genre`) = UPPER(:genre)");
+    $query->execute(['genre' => $genre]);
+
+    $genreFromDb = $query->fetch();
+    if (!$genreFromDb) {
+      $query = $this->connect->prepare("INSERT INTO `genres` (`genre`) VALUES (:genre)");
+      $query->execute(['genre' => $genre]);
+    }
+
+    $query = $this->connect->prepare("SELECT * FROM `genres` WHERE UPPER(`genre`) = UPPER(:genre)");
+    $query->execute(['genre' => $genre]);
+
+    $genreFromDb = $query->fetch();
+
+
+    $query = $this->connect->prepare("UPDATE `books` SET `author_id` = :author_id, `publish_id` = :publish_id, `genre_id` = :genre_id, `name` = :name, `publish_year` = :publish_year, `description` = :description, `count` = :count WHERE `book_id` = :book_id");
+
+    $query->bindParam(':author_id', $authorId, PDO::PARAM_INT);
+    $query->bindParam(':publish_id', $publish['publish_id'], PDO::PARAM_INT);
+    $query->bindParam(':genre_id', $genreFromDb['genre_id'], PDO::PARAM_INT);
+    $query->bindParam(':name', $name);
+    $query->bindParam(':publish_year', $publish_year);
+    $query->bindParam(':description', $description);
+    $query->bindParam(':count', $count);
+    $query->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+    $query->execute();
+
+    return [
+      'isError' => false,
+      'message' => 'Книга успешно отредактирована'
+    ];
+  }
+
+  /**
+   * Метод удаления книги 
+   * @param int
+   * @return array
+   */
+  public function deleteBook(int $bookId): void
+  {
+    $query = $this->connect->prepare("DELETE FROM `books` WHERE `book_id` = :book_id");
+    $query->execute(['book_id' => $bookId]);
   }
 
   /**
