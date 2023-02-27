@@ -416,7 +416,7 @@ class LibraryService
    * Метод получения списка выдачи книг 
    * @return array
    */
-  public function getIssuedBookById(int|null $bookId = null, int|null $studentId = null, string $status = ''): array
+  public function getIssuedBooksById(int|null $bookId = null, int|null $studentId = null, string $status = ''): array
   {
     if (is_null($bookId) && is_null($studentId)) {
       die('Student id and book id not must null');

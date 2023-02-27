@@ -88,7 +88,7 @@ if (!$isAuth) {
 
         <?php
 
-        $issuedBooks = $libraryService->getIssuedBookById((int) $_GET['id'], null);
+        $issuedBooks = $libraryService->getIssuedBooksById((int) $_GET['id'], null);
 
         ?>
 

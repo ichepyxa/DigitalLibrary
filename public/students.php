@@ -35,6 +35,7 @@ if (!$isAuth) {
         <?php
 
         $student = $studentService->getStudent((int) $_GET['id']);
+        $issuedBooks = $libraryService->getIssuedBooksById(null, (int) $_GET['id']);
 
         ?>
 
@@ -57,32 +58,43 @@ if (!$isAuth) {
                 </p>
               </div>
 
-              <div class="flex justify-end item-center gap-5 w-full mt-6">
-                <a href="delete-student.php?student_id=<?= $student['student_id'] ?>&redirectPath=/students.php"
-                  class='px-6 py-2 font-medium tracking-wide text-white transition-colors duration-300 transform bg-red-600 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-80 w-fit flex items-center gap-2'>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M4 7h16"></path>
-                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
-                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
-                    <path d="M10 12l4 4m0 -4l-4 4"></path>
-                  </svg>
-                  Удалить
-                </a>
-                <a href="give-book.php?student_id=<?= $student['student_id'] ?>"
-                  class='px-6 py-2 font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 block w-fit'>Выдать
-                  книгу</a>
+              <div class="flex justify-between item-center w-full mt-6">
+                <div>
+                  <?php if (isset($issuedBooks) && count($issuedBooks) > 0): ?>
+                    <a href="create-report.php?student_id=<?= $student['student_id'] ?>&redirectPath=/students.php"
+                      class='pl-4 pr-6 py-2 font-medium tracking-wide text-white transition-colors duration-300 transform bg-emerald-600 rounded-lg hover:bg-emerald-500 focus:outline-none focus:ring focus:ring-emerald-300 focus:ring-opacity-80 flex items-center gap-2 w-fit'>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                        <path d="M7 11l5 5l5 -5"></path>
+                        <path d="M12 4l0 12"></path>
+                      </svg>
+                      Скачать отчет
+                    </a>
+                  <?php endif; ?>
+                </div>
+                <div class="flex items-center gap-5">
+                  <a href="delete-student.php?student_id=<?= $student['student_id'] ?>&redirectPath=/students.php"
+                    class='pl-4 pr-6 py-2 font-medium tracking-wide text-white transition-colors duration-300 transform bg-red-600 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-80 w-fit flex items-center gap-2'>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                      stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M4 7h16"></path>
+                      <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                      <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                      <path d="M10 12l4 4m0 -4l-4 4"></path>
+                    </svg>
+                    Удалить
+                  </a>
+                  <a href="give-book.php?student_id=<?= $student['student_id'] ?>"
+                    class='px-6 py-2 font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 block w-fit'>Выдать
+                    книгу</a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <?php
-
-        $issuedBooks = $libraryService->getIssuedBookById(null, (int) $_GET['id']);
-
-        ?>
 
         <div class="flex flex-col w-5/6 mx-auto">
           <h2 class="text-2xl mb-3 font-bold">История выдачи книг</h2>
