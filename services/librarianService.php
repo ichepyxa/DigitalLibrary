@@ -31,6 +31,35 @@ class LibrarianService
 
     return $librarian['login'];
   }
+
+  /**
+   * Метод получения библиотекарей
+   * @return array
+   */
+  public function getLibrarians(): array
+  {
+    $query = $this->connect->prepare("SELECT * FROM `librarians`");
+    $query->execute();
+
+    $librarians = $query->fetchAll();
+    if (!$librarians) {
+      return [];
+    }
+
+    $result = [];
+    foreach ($librarians as $key => $librarian) {
+      $result[$key] = [
+        'librarian_id' => $librarian['librarian_id'],
+        'login' => $librarian['login'],
+        'surname' => $librarian['surname'],
+        'name' => $librarian['name'],
+        'patronymic' => $librarian['patronymic'],
+        'is_admin' => $librarian['is_admin'],
+      ];
+    }
+
+    return $result;
+  }
 }
 
 $librarianService = new LibrarianService($connect);

@@ -3,7 +3,7 @@
 require_once '../utils/renderTemplate.php';
 require_once '../services/authService.php';
 require_once '../services/librarianService.php';
-require_once '../services/libraryService.php';
+require_once '../services/studentService.php';
 
 $isAuth = $authService->checkIsAuth();
 $isAdmin = $authService->checkIsAdmin();
@@ -14,15 +14,20 @@ if (!$isAuth) {
   exit();
 }
 
-if (!isset($_GET['issueId']) && !$_GET['issueId']) {
-  header('Location: library.php');
+if (!isset($_GET['student_id']) && !$_GET['student_id']) {
+  header('Location: students.php');
   exit();
 }
 
-$result = $libraryService->returnIssuedBook($_GET['issueId']);
+$result = $studentService->deleteStudent((int) $_GET['student_id']);
+if (!$result) {
+  header('Location: students.php');
+  exit();
+}
+
 
 if (!isset($_GET['redirectPath'])) {
-  header('Location: library.php');
+  header('Location: students.php');
   exit();
 }
 

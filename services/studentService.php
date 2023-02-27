@@ -86,7 +86,18 @@ class StudentService
     return $result[0];
   }
 
-  public function createStudent(string $name, string $surname, string $patronymic, string $address, string $group, string $date_birth, string $phone)
+  /**
+   * Метод для создания карточки студента
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @return array
+   */
+  public function createStudent(string $name, string $surname, string $patronymic, string $address, string $group, string $date_birth, string $phone): array
   {
     $groupUpperCase = mb_strtoupper($group, 'UTF-8');
     $query = $this->connect->prepare("SELECT * FROM `groups` WHERE `group_name` = :group_name");
@@ -117,8 +128,39 @@ class StudentService
 
     return [
       'isError' => false,
-      'message' => 'Пользователь успешно создан'
+      'message' => 'Студен успешно создан'
     ];
+  }
+
+  /**
+   * Метод для удаления карточки студента
+   * @param int
+   * @return void
+   */
+  public function deleteStudent(int $studentId): void
+  {
+    // $query = $this->connect->prepare("SELECT * FROM `issued` WHERE `student_id` = :student_id");
+    // $query->execute(['student_id' => $studentId]);
+
+    // $issuedBooks = $query->fetchAll();
+    // if ($issuedBooks) {
+    //   foreach ($issuedBooks as $key => $issueBook) {
+    //     $query = $this->connect->prepare("SELECT * FROM `books` WHERE `book_id` = :book_id");
+    //     $query->execute(['book_id' => $issueBook['book_id']]);
+
+    //     $book = $query->fetch();
+    //     if ($book) {
+    //       $count = (int) $book['count'] + 1;
+    //       $query = $this->connect->prepare("UPDATE `books` SET `count` = :count WHERE `book_id` = :book_id");
+    //       $query->bindParam(':count', $count, PDO::PARAM_INT);
+    //       $query->bindParam(':book_id', $book['book_id'], PDO::PARAM_INT);
+    //       $query->execute();
+    //     }
+    //   }
+    // }
+
+    $query = $this->connect->prepare("DELETE FROM `student_cards` WHERE `student_id` = :student_id");
+    $query->execute(['student_id' => $studentId]);
   }
 }
 
